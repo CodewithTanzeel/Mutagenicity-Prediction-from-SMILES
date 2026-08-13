@@ -168,7 +168,7 @@ print("="*50)
 
 # ---- load ensemble once at startup -----------------------------------
 try:
-    _ckpt = torch.load(CHECKPOINT_PATH, map_location="cpu")
+    _ckpt = torch.load(CHECKPOINT_PATH, map_location="cpu", weights_only=False)
     _models = []
     for sd in _ckpt["state_dicts"]:
         m = GIN(**_ckpt["config"])
