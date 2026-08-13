@@ -159,16 +159,27 @@ DEFAULT_SHEET = [
     {"name": "Glucose",               "smiles": "OCC(O)C(O)C(O)C(O)C=O",              "expected": "Non-mutagenic", "predicted": "", "verdict": ""},
 ]
 
+import os
+import traceback
+
+print("="*50)
+print("STARTING APP.PY - DO NOT CRASH")
+print("="*50)
+
 # ---- load ensemble once at startup -----------------------------------
-_ckpt = torch.load(CHECKPOINT_PATH, map_location="cpu")
-_models = []
-for sd in _ckpt["state_dicts"]:
-    m = GIN(**_ckpt["config"])
-    m.load_state_dict(sd)
-    m.eval()
-    _models.append(m)
-print(f"Loaded ensemble of {len(_models)} models.")
-assert _ckpt["tag_list"] == sorted(range(NUM_TAGS))
+try:
+    _ckpt = torch.load(CHECKPOINT_PATH, map_location="cpu")
+    _models = []
+    for sd in _ckpt["state_dicts"]:
+        m = GIN(**_ckpt["config"])
+        m.load_state_dict(sd)
+        m.eval()
+        _models.append(m)
+    print("MODEL OK:", len(_models), "models")
+    assert _ckpt["tag_list"] == sorted(range(NUM_TAGS))
+except Exception as e:
+    print("MODEL FAILED:", e)
+    raise
 
 # ---- AD setup --------------------------------------------------------
 def _load_train_smiles():
@@ -176,11 +187,15 @@ def _load_train_smiles():
         with open("train_smiles.txt") as f:
             return [ln.strip() for ln in f if ln.strip()]
     except FileNotFoundError:
-        print("WARNING: train_smiles.txt missing -- run `python make_ad_file.py`")
+        print("WARNING: train_smiles.txt missing")
         return []
 
-_domain = DomainChecker(_load_train_smiles())
-print(f"AD checker ready: {len(_domain.fps)} training fingerprints.")
+try:
+    _domain = DomainChecker(_load_train_smiles())
+    print("AD OK:", len(_domain.fps), "fingerprints")
+except Exception as e:
+    print("AD FAILED:", e)
+    raise
 
 _AD_COLORS = {
     "HIGH reliability": "#2f6b4c",
