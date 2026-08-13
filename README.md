@@ -17,17 +17,17 @@ string — and see** ***why***\*\*.\*\*
 ### 🧠 Model Documentation
 
 ![OECD QSAR model documentation and
-methodology](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/main/docs/model-documentation.png)
+methodology](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/docs/model-documentation.png)
 
 ### 🔬 Interactive Prediction & Explanation
 
 ![Molecular mutagenicity prediction with atom-level
-attribution](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/main/docs/prediction.png)
+attribution](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/docs/prediction.png)
 
 ### 📋 Generalization Test Sheet
 
 ![Generalization test sheet with known
-compounds](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/main/docs/generalization-test.png)
+compounds](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/docs/generalization-test.png)
 
 ------------------------------------------------------------------------
 
