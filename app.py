@@ -321,6 +321,7 @@ def build_report_html(data):
 
 # ---- app ---------------------------------------------------------------
 app = Dash(__name__)
+server = app.server  # exposes the underlying Flask app for gunicorn (e.g. `gunicorn app:server`)
 app.title = "Molecular Mutagenicity Explainer"
 
 FONTS = (
