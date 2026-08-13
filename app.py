@@ -19,44 +19,72 @@ from render import render_molecule_png
 CHECKPOINT_PATH = "checkpoint_ames.pt"
 
 CSS = """
+:root{
+ --paper:#eef1e5; --paper-raised:#f8f9f1; --paper-deep:#e4e8d9;
+ --ink:#1d2a20; --ink-soft:#5c6b5e; --ink-faint:#8b9a8d;
+ --line:rgba(29,42,32,.18); --line-soft:rgba(29,42,32,.10);
+ --moss:#2f6b4c; --moss-bg:rgba(47,107,76,.11);
+ --brick:#a13f2c; --brick-bg:rgba(161,63,44,.11);
+ --amber:#a97a1f; --amber-bg:rgba(169,122,31,.13);
+}
 *{box-sizing:border-box}
-body{margin:0;background:#161311;color:#f4ede4;font-family:"Segoe UI",system-ui,sans-serif}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font-family:"IBM Plex Sans",system-ui,sans-serif;
+ background-image:radial-gradient(circle at 1px 1px, rgba(29,42,32,.13) 1px, transparent 0);
+ background-size:24px 24px}
 .wrap{max-width:1020px;margin:0 auto;padding:28px 20px 60px}
-.hero{padding:26px;border:1px solid #3a322c;border-radius:16px;background:
- radial-gradient(1100px 300px at 0% 0%,rgba(255,122,26,.16),transparent 60%),
- radial-gradient(900px 260px at 100% 0%,rgba(255,93,93,.12),transparent 60%),#201b18}
-.hero-badge{display:inline-block;font-size:11px;letter-spacing:.14em;font-weight:700;
- color:#ffb347;border:1px solid rgba(255,179,71,.45);border-radius:999px;padding:4px 12px;
- background:rgba(255,122,26,.08);text-transform:uppercase}
-.hero h1{margin:12px 0 6px;font-size:30px}
-.hero h1 span{color:#ff7a1a}
-.hero p{margin:0;color:#b3a89b;max-width:780px;line-height:1.55;font-size:14px}
-.stats{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
-.stat{flex:1;min-width:160px;background:#28221e;border:1px solid #3a322c;border-radius:12px;padding:10px 14px}
-.stat b{display:block;font-size:16px;color:#ffb347}
-.stat span{font-size:12px;color:#b3a89b}
-.card{background:#201b18;border:1px solid #3a322c;border-radius:16px;padding:20px;margin-top:18px}
-.card h3{margin:0 0 4px;font-size:16px;color:#ff7a1a}
-.hint{color:#b3a89b;font-size:12.5px;margin:0 0 14px;line-height:1.5}
+.hero{position:relative;padding:30px 28px 26px;border:1px solid var(--line);border-radius:4px;
+ background:var(--paper-raised);overflow:hidden;
+ box-shadow:0 1px 0 var(--paper-deep) inset}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:radial-gradient(circle at 1px 1px, rgba(29,42,32,.10) 1.2px, transparent 0);
+ background-size:16px 16px;opacity:.6}
+.hero::after{content:"";display:block;position:absolute;left:0;right:0;bottom:0;height:5px;
+ background:linear-gradient(90deg,var(--moss) 0%,var(--moss) 32%,var(--amber) 32%,var(--amber) 66%,var(--brick) 66%,var(--brick) 100%)}
+.hero-badge{position:relative;display:inline-block;font-family:"IBM Plex Mono",monospace;
+ font-size:10.5px;letter-spacing:.12em;font-weight:600;color:var(--ink-soft);
+ border:1px dashed var(--line);border-radius:2px;padding:5px 11px;
+ background:var(--paper);text-transform:uppercase}
+.hero h1{position:relative;margin:16px 0 8px;font-family:"Space Grotesk",system-ui,sans-serif;
+ font-size:32px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.hero h1 span{color:var(--amber)}
+.hero p{position:relative;margin:0;color:var(--ink-soft);max-width:760px;line-height:1.6;font-size:14px}
+.stats{position:relative;display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.stat{flex:1;min-width:160px;background:var(--paper);border:1px solid var(--line);border-radius:3px;
+ padding:11px 14px;border-top:2px solid var(--ink-faint)}
+.stat b{display:block;font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;color:var(--ink)}
+.stat span{font-size:11.5px;color:var(--ink-soft)}
+.card{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:22px;margin-top:16px}
+.card h3{margin:0 0 4px;font-family:"Space Grotesk",system-ui,sans-serif;font-size:16px;
+ font-weight:600;color:var(--ink)}
+.hint{color:var(--ink-soft);font-size:12.5px;margin:0 0 16px;line-height:1.55}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-input.smiles{flex:1;min-width:240px;background:#161311;border:1px solid #3a322c;color:#f4ede4;
- border-radius:10px;padding:11px 14px;font-size:14px;outline:none}
-input.smiles:focus{border-color:#ff7a1a}
-button.btn{background:linear-gradient(135deg,#ff7a1a,#ff5d5d);border:none;color:#1b120c;
- font-weight:800;border-radius:10px;padding:11px 18px;cursor:pointer;font-size:14px}
-button.btn:hover{filter:brightness(1.12)}
-button.btn.ghost{background:transparent;color:#ffb347;border:1px solid rgba(255,179,71,.4)}
-.chips{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
-.chips button{background:#28221e;border:1px solid #3a322c;color:#b3a89b;border-radius:999px;
- padding:6px 12px;font-size:12px;cursor:pointer}
-.chips button:hover{border-color:#ff7a1a;color:#ffb347}
-.mol-card{background:#fff;border-radius:14px;padding:10px;margin-top:16px}
-.expl{color:#b3a89b;font-size:13.5px;line-height:1.6;margin-top:10px}
-.tabs .tab{background:#201b18;border:1px solid #3a322c;color:#b3a89b;border-radius:10px 10px 0 0;
- padding:10px 18px;font-weight:700;cursor:pointer;border-bottom:none}
-.tabs .tab--selected{background:#28221e;color:#ffb347;border-color:#ff7a1a}
-.summary{margin-top:14px;font-size:15px;font-weight:700;color:#ffb347}
-footer{color:#7d7367;font-size:12px;margin-top:26px;text-align:center}
+input.smiles{flex:1;min-width:240px;background:var(--paper);border:1px solid var(--line);color:var(--ink);
+ border-radius:2px;padding:11px 14px;font-family:"IBM Plex Mono",monospace;font-size:13.5px;outline:none}
+input.smiles::placeholder{color:var(--ink-faint)}
+input.smiles:focus{border-color:var(--amber)}
+button.btn{background:var(--ink);border:1px solid var(--ink);color:var(--paper-raised);
+ font-family:"IBM Plex Mono",monospace;font-weight:600;letter-spacing:.02em;
+ border-radius:2px;padding:11px 18px;cursor:pointer;font-size:13px}
+button.btn:hover{background:var(--amber);border-color:var(--amber);color:#1d1503}
+button.btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
+button.btn.ghost:hover{border-color:var(--ink-soft);color:var(--ink)}
+.chips{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.chips button{background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);
+ border-radius:999px;font-family:"IBM Plex Mono",monospace;
+ padding:6px 13px;font-size:11.5px;cursor:pointer}
+.chips button:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+.mol-card{background:#fdfdfa;border:1px solid var(--line);border-radius:3px;padding:12px;margin-top:18px}
+.expl{color:var(--ink-soft);font-size:13.5px;line-height:1.65;margin-top:10px}
+.tabs .tab{background:transparent;border:1px solid var(--line);border-bottom:2px solid var(--paper);
+ color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;border-radius:3px 3px 0 0;
+ padding:10px 18px;font-weight:600;font-size:12.5px;letter-spacing:.02em;cursor:pointer}
+.tabs .tab--selected{background:var(--paper-raised);color:var(--ink);border-color:var(--line);
+ border-bottom:2px solid var(--amber)}
+.summary{margin-top:16px;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;color:var(--ink)}
+footer{color:var(--ink-faint);font-family:"IBM Plex Mono",monospace;font-size:11px;
+ margin-top:30px;padding-top:16px;border-top:1px dashed var(--line);text-align:center;
+ letter-spacing:.03em}
 """
 
 EXAMPLES = [
@@ -97,8 +125,18 @@ app = Dash(__name__)
 app.title = "Molecular Mutagenicity Explainer"
 
 # Inject the stylesheet (html.Style doesn't exist in this Dash version)
+FONTS = (
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link href="https://fonts.googleapis.com/css2?'
+    'family=Space+Grotesk:wght@500;600;700'
+    '&family=IBM+Plex+Sans:wght@400;500'
+    '&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">'
+)
+
 app.index_string = (
     "<!DOCTYPE html><html><head>{%metas%}<title>{%title%}</title>{%favicon%}"
+    + FONTS +
     "<style>" + CSS + "</style></head><body>{%app_entry%}"
     "<footer>{%config%}{%scripts%}{%renderer%}</footer></body></html>"
 )
@@ -149,7 +187,9 @@ app.layout = html.Div(
                     html.Button(name, id={"type": "example-btn", "index": i}, n_clicks=0)
                     for i, (name, _) in enumerate(EXAMPLES)
                 ]),
-                html.Div(id="error-output", style={"color": "#ff5d5d", "marginTop": "10px"}),
+                html.Div(id="error-output", style={"color": "#a13f2c", "marginTop": "10px",
+                                                    "fontFamily": '"IBM Plex Mono",monospace',
+                                                    "fontSize": "12.5px"}),
                 html.Div(id="mol-wrap", className="mol-card", style={"display": "none"},
                          children=[html.Img(id="mol-image", style={"maxWidth": "100%"})]),
                 html.H4(id="prediction-output", style={"marginTop": "14px"}),
@@ -188,18 +228,21 @@ app.layout = html.Div(
                         dropdown={"expected": {"options": [
                             {"label": v, "value": v} for v in ["Mutagenic", "Non-mutagenic", ""]]}},
                         style_table={"overflowX": "auto", "marginTop": "14px"},
-                        style_header={"backgroundColor": "#28221e", "color": "#ffb347",
-                                      "border": "1px solid #3a322c", "fontWeight": "700",
-                                      "fontSize": "13px", "padding": "10px"},
-                        style_cell={"backgroundColor": "#201b18", "color": "#f4ede4",
-                                    "border": "1px solid #3a322c", "padding": "9px 12px",
-                                    "fontSize": "13px", "textAlign": "left", "minWidth": "90px"},
+                        style_header={"backgroundColor": "#e4e8d9", "color": "#1d2a20",
+                                      "border": "1px solid rgba(29,42,32,.18)", "fontWeight": "600",
+                                      "fontFamily": '"IBM Plex Mono",monospace',
+                                      "fontSize": "12px", "letterSpacing": ".02em",
+                                      "textTransform": "uppercase", "padding": "10px"},
+                        style_cell={"backgroundColor": "#f8f9f1", "color": "#1d2a20",
+                                    "border": "1px solid rgba(29,42,32,.18)", "padding": "9px 12px",
+                                    "fontFamily": '"IBM Plex Mono",monospace',
+                                    "fontSize": "12.5px", "textAlign": "left", "minWidth": "90px"},
                         style_data_conditional=[
                             {"if": {"column_id": "verdict", "filter_query": '{verdict} = "✓"'},
-                             "color": "#4cd478", "fontWeight": "800"},
+                             "color": "#2f6b4c", "fontWeight": "700"},
                             {"if": {"column_id": "verdict", "filter_query": '{verdict} = "✗"'},
-                             "color": "#ff5d5d", "fontWeight": "800"},
-                            {"if": {"column_id": "predicted"}, "color": "#ffb347"},
+                             "color": "#a13f2c", "fontWeight": "700"},
+                            {"if": {"column_id": "predicted"}, "color": "#a97a1f", "fontWeight": "600"},
                         ],
                     ),
                 ),
@@ -262,10 +305,11 @@ def run_prediction(n_clicks, smiles):
         pred_text = f"Verdict: {verdict.upper()}  ·  {gin_text}"
         expl = explain(mol, tags, result["importance"])
 
-    color = "#ff5d5d" if verdict == "Mutagenic" else "#4cd478"
+    color = "#a13f2c" if verdict == "Mutagenic" else "#2f6b4c"
     return ({"display": "block", "marginTop": "16px"},
             render_molecule_png(mol, result["importance_norm"]),
-            pred_text, {"color": color, "marginTop": "14px"}, expl, "")
+            pred_text, {"color": color, "marginTop": "14px",
+                        "fontFamily": '"Space Grotesk",system-ui,sans-serif'}, expl, "")
 
 @app.callback(
     Output("sheet-table", "data", allow_duplicate=True),
