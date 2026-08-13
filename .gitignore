@@ -1,0 +1,10 @@
+# Never upload
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.vscode/
+.idea/
+
+# Training datasets (not needed for prediction)
+dataset/
