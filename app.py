@@ -24,7 +24,34 @@ from ad import DomainChecker, domain_label
 from metabolism import generate_metabolites, metabolite_alerts
 from render import render_molecule_png
 
+import os
+import urllib.request
+
 CHECKPOINT_PATH = "checkpoint_ames_ensemble.pt"
+CHECKPOINT_URL = os.environ.get("CHECKPOINT_URL")  # set this in your host's env vars
+MIN_CHECKPOINT_BYTES = 10_000  # a real .pt is way bigger than a ~130-byte LFS pointer file
+
+_needs_download = (
+    not os.path.exists(CHECKPOINT_PATH)
+    or os.path.getsize(CHECKPOINT_PATH) < MIN_CHECKPOINT_BYTES
+)
+
+if _needs_download and CHECKPOINT_URL:
+    print("Checkpoint missing or too small (likely an LFS pointer) - downloading from CHECKPOINT_URL...")
+    try:
+        urllib.request.urlretrieve(CHECKPOINT_URL, CHECKPOINT_PATH)
+        size = os.path.getsize(CHECKPOINT_PATH)
+        print("Checkpoint downloaded:", size, "bytes")
+        if size < MIN_CHECKPOINT_BYTES:
+            raise RuntimeError(
+                f"Downloaded file is only {size} bytes - CHECKPOINT_URL is probably still "
+                "pointing at an LFS pointer or an HTML page, not the real .pt file."
+            )
+    except Exception as e:
+        print("CHECKPOINT DOWNLOAD FAILED:", e)
+        raise
+elif _needs_download:
+    print("WARNING: checkpoint missing/invalid locally and no CHECKPOINT_URL set")
 
 # ---- notebook-page background --------------------------------------
 NOTEBOOK_SVG = """
@@ -159,7 +186,6 @@ DEFAULT_SHEET = [
     {"name": "Glucose",               "smiles": "OCC(O)C(O)C(O)C(O)C=O",              "expected": "Non-mutagenic", "predicted": "", "verdict": ""},
 ]
 
-import os
 import traceback
 
 print("="*50)
