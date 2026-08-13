@@ -14,20 +14,18 @@ string — and see** ***why***\*\*.\*\*
 
 ## 📸 Screenshots
 
+
 ### 🧠 Model Documentation
 
-![OECD QSAR model documentation and
-methodology](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/docs/model-documentation.png)
+![OECD QSAR model documentation and methodology](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/main/docs/model-documentation.png)
 
 ### 🔬 Interactive Prediction & Explanation
 
-![Molecular mutagenicity prediction with atom-level
-attribution](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/docs/prediction.png)
+![Molecular mutagenicity prediction with atom-level attribution](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/main/docs/prediction.png)
 
 ### 📋 Generalization Test Sheet
 
-![Generalization test sheet with known
-compounds](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/docs/generalization-test.png)
+![Generalization test sheet with known compounds](https://raw.githubusercontent.com/CodewithTanzeel/Mutagenicity-Prediction-from-SMILES/main/docs/generalization-test.png)
 
 ------------------------------------------------------------------------
 
